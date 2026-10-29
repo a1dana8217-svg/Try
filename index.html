@@ -1,0 +1,454 @@
+
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>বাংলাদেশ | তথ্য নির্বাচন</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: #172033;
+  background: linear-gradient(135deg, #e0f7fa, #fce4ec, #fff3cd, #e8eaf6);
+  min-height: 100vh;
+}
+
+.header {
+  background: linear-gradient(100deg, #006a4e, #009b72, #00a8a8);
+  color: white;
+  text-align: center;
+  padding: 28px 15px;
+  border-bottom: 5px solid #f42a41;
+}
+
+.flag { font-size: 42px; }
+
+.header h1 {
+  margin: 8px 0;
+  font-size: 30px;
+}
+
+.header p { margin: 5px 0; }
+
+.container {
+  max-width: 850px;
+  margin: 25px auto;
+  padding: 12px;
+}
+
+.panel {
+  background: rgba(255,255,255,0.96);
+  border: 3px solid transparent;
+  border-radius: 22px;
+  padding: 22px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 25px #26323820;
+  border-image: linear-gradient(135deg, #00a878, #e83e8c, #ffc107) 1;
+}
+
+.panel h2 {
+  color: #006a4e;
+  text-align: center;
+  margin-top: 0;
+}
+
+.field { margin: 20px 0; }
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 9px;
+  color: #343a75;
+}
+
+select {
+  width: 100%;
+  padding: 14px;
+  border: 2px solid #00a878;
+  border-radius: 12px;
+  background: #f8fffc;
+  font-size: 16px;
+  color: #172033;
+}
+
+select:focus {
+  outline: 3px solid #a7e9d4;
+}
+
+button {
+  border: 0;
+  border-radius: 12px;
+  padding: 13px 18px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  color: white;
+  margin: 5px;
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.download {
+  background: linear-gradient(100deg, #e83e8c, #7b2ff7);
+}
+
+.reset { background: #536579; }
+
+.refresh { background: #007bff; }
+
+.buttons {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.result-card {
+  padding: 20px 12px;
+  text-align: center;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #e0f7fa, #fce4ec);
+  border: 2px solid #d4c5f9;
+  overflow-wrap: anywhere;
+}
+
+.result-card:nth-child(2) {
+  background: linear-gradient(145deg, #fff3cd, #d9f7e9);
+  border-color: #7ac9a5;
+}
+
+.result-card h3 {
+  color: #006a4e;
+  font-size: 15px;
+  margin-top: 0;
+}
+
+.result-value {
+  font-size: 20px;
+  font-weight: bold;
+  color: #7026a8;
+}
+
+.status {
+  text-align: center;
+  padding: 12px;
+  color: #39445c;
+  overflow-wrap: anywhere;
+}
+
+.footer {
+  text-align: center;
+  padding: 22px 10px;
+  background: #063b32;
+  color: white;
+  border-top: 5px solid #f42a41;
+}
+
+@media (max-width: 500px) {
+  .header h1 { font-size: 24px; }
+  .container { margin: 12px auto; }
+  .panel { padding: 16px; }
+  .result-grid { grid-template-columns: 1fr; }
+  button { width: 100%; margin: 5px 0; }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+  <div class="flag">🇧🇩</div>
+  <h1>বাংলাদেশ</h1>
+  <p>তথ্য নির্বাচন ও ডাউনলোড কেন্দ্র</p>
+</header>
+
+<main class="container">
+
+  <section class="panel">
+    <h2>তথ্য নির্বাচন করুন</h2>
+
+    <div class="field">
+      <label id="label1" for="select1">প্রথম কলাম</label>
+      <select id="select1" disabled>
+        <option value="">তথ্য লোড হচ্ছে...</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label id="label2" for="select2">দ্বিতীয় কলাম</label>
+      <select id="select2" disabled>
+        <option value="">তথ্য লোড হচ্ছে...</option>
+      </select>
+    </div>
+
+    <div class="buttons">
+      <button class="refresh" id="refresh">তথ্য রিফ্রেশ করুন</button>
+      <button class="reset" id="reset">নতুন নির্বাচন</button>
+    </div>
+  </section>
+
+  <section class="panel" id="output">
+    <h2>আপনার নির্বাচিত তথ্য</h2>
+    <div class="result-grid">
+      <div class="result-card">
+        <h3 id="resultLabel1">প্রথম তথ্য</h3>
+        <div class="result-value" id="result1">—</div>
+      </div>
+
+      <div class="result-card">
+        <h3 id="resultLabel2">দ্বিতীয় তথ্য</h3>
+        <div class="result-value" id="result2">—</div>
+      </div>
+    </div>
+
+    <p class="status" id="status">তথ্য লোড হচ্ছে...</p>
+
+    <div class="buttons">
+      <button class="download" id="download" disabled>
+        ⬇ নির্বাচিত তথ্য ডাউনলোড করুন
+      </button>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  🇧🇩 বাংলাদেশ | তথ্য নির্বাচন কেন্দ্র
+</footer>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbxN-sU3HdhhahhYooOsBlQ_tuG4wjs3vrMP3aTqS0wttjArK1yLsV_knnHAvY-I3HI/exec";
+
+const select1 = document.getElementById("select1");
+const select2 = document.getElementById("select2");
+const statusBox = document.getElementById("status");
+const downloadButton = document.getElementById("download");
+
+let sheetData = [];
+let headers = [];
+let requestId = 0;
+
+function addOption(select, value, text) {
+  const option = document.createElement("option");
+  option.value = value;
+  option.textContent = text;
+  select.appendChild(option);
+}
+
+function loadData() {
+  const current = ++requestId;
+  select1.disabled = true;
+  select2.disabled = true;
+  downloadButton.disabled = true;
+  statusBox.textContent = "Google Sheets থেকে তথ্য আনা হচ্ছে...";
+
+  const previous = document.getElementById("sheetApiScript");
+  if (previous) previous.remove();
+
+  const script = document.createElement("script");
+  script.id = "sheetApiScript";
+
+  window.receiveSheetData = function(data) {
+    if (current !== requestId) return;
+
+    if (!Array.isArray(data) || data.length === 0) {
+      statusBox.textContent = "কোনো তথ্য পাওয়া যায়নি।";
+      return;
+    }
+
+    headers = Object.keys(data[0] || {});
+
+    if (headers.length < 2) {
+      statusBox.textContent =
+        "Google Sheets-এ কমপক্ষে দুটি কলাম থাকতে হবে।";
+      return;
+    }
+
+    headers = headers.slice(0, 2);
+    sheetData = data.filter(row =>
+      headers.some(key => String(row[key] ?? "").trim() !== "")
+    );
+
+    document.getElementById("label1").textContent = headers[0];
+    document.getElementById("label2").textContent = headers[1];
+    document.getElementById("resultLabel1").textContent = headers[0];
+    document.getElementById("resultLabel2").textContent = headers[1];
+
+    [select1, select2].forEach((select, index) => {
+      select.replaceChildren();
+      addOption(select, "", "— " + headers[index] + " নির্বাচন করুন —");
+
+      const uniqueValues = [...new Set(
+        sheetData
+          .map(row => String(row[headers[index]] ?? "").trim())
+          .filter(value => value !== "")
+      )];
+
+      uniqueValues.forEach(value => addOption(select, value, value));
+      select.disabled = false;
+    });
+
+    statusBox.textContent =
+      "তথ্য লোড হয়েছে। দুটি ড্রপডাউন থেকে নির্বাচন করুন।";
+
+    updateResult();
+  };
+
+  script.onerror = function() {
+    if (current === requestId) {
+      statusBox.textContent =
+        "তথ্য লোড হয়নি। Apps Script URL ও অনুমতি পরীক্ষা করুন।";
+    }
+  };
+
+  script.src = API_URL +
+    "?callback=receiveSheetData&ts=" + Date.now();
+
+  document.body.appendChild(script);
+}
+
+function updateResult() {
+  const first = select1.value;
+  const second = select2.value;
+
+  document.getElementById("result1").textContent = first || "—";
+  document.getElementById("result2").textContent = second || "—";
+
+  const ready = Boolean(first && second);
+
+  downloadButton.disabled = !ready;
+
+  if (ready) {
+    statusBox.textContent = "দুটি তথ্য নির্বাচন সম্পন্ন হয়েছে।";
+  } else {
+    statusBox.textContent =
+      "ডাউনলোড করতে দুটি ড্রপডাউন থেকেই তথ্য নির্বাচন করুন।";
+  }
+}
+
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
+}
+
+function downloadResult() {
+  const first = select1.value;
+  const second = select2.value;
+
+  if (!first || !second) return;
+
+  const title1 = escapeHTML(headers[0]);
+  const title2 = escapeHTML(headers[1]);
+  const value1 = escapeHTML(first);
+  const value2 = escapeHTML(second);
+
+  const page = `<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>বাংলাদেশ - নির্বাচিত তথ্য</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;padding:25px 14px;font-family:Arial,sans-serif;
+ background:linear-gradient(135deg,#d9f7e9,#fce4ec,#fff3cd,#e0f7fa);
+ color:#243047;min-height:100vh
+}
+header{
+ max-width:750px;margin:auto;text-align:center;color:white;
+ padding:28px 10px;background:linear-gradient(100deg,#006a4e,#00a878);
+ border-bottom:6px solid #f42a41;border-radius:20px 20px 0 0
+}
+.flag{font-size:45px}
+h1{margin:8px}
+main{
+ max-width:750px;margin:auto;padding:24px;
+ background:white;border:5px solid #c4a7ff;
+ border-radius:0 0 20px 20px
+}
+h2{text-align:center;color:#006a4e}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.card{
+ padding:24px 10px;text-align:center;overflow-wrap:anywhere;
+ border-radius:18px;background:linear-gradient(135deg,#e0f7fa,#fce4ec);
+ border:2px solid #d4a7ff
+}
+.card:nth-child(2){
+ background:linear-gradient(135deg,#fff3cd,#d9f7e9);
+ border-color:#00a878
+}
+.label{font-weight:bold;color:#006a4e}
+.value{font-size:22px;font-weight:bold;color:#7026a8;margin-top:15px}
+footer{text-align:center;margin:20px;color:#006a4e}
+@media(max-width:480px){.grid{grid-template-columns:1fr}main{padding:14px}}
+@media print{body{background:white;padding:0}.card,header,main{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+</style>
+</head>
+<body>
+<header>
+<div class="flag">🇧🇩</div>
+<h1>বাংলাদেশ</h1>
+<p>নির্বাচিত তথ্যের বিবরণ</p>
+</header>
+<main>
+<h2>আপনার নির্বাচিত তথ্য</h2>
+<div class="grid">
+<div class="card">
+<div class="label">${title1}</div>
+<div class="value">${value1}</div>
+</div>
+<div class="card">
+<div class="label">${title2}</div>
+<div class="value">${value2}</div>
+</div>
+</div>
+</main>
+<footer>🇧🇩 বাংলাদেশ | তথ্য নির্বাচন কেন্দ্র</footer>
+</body>
+</html>`;
+
+  const blob = new Blob([page], {type: "text/html;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "Bangladesh-Selected-Information.html";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+select1.addEventListener("change", updateResult);
+select2.addEventListener("change", updateResult);
+downloadButton.addEventListener("click", downloadResult);
+
+document.getElementById("refresh").addEventListener("click", loadData);
+
+document.getElementById("reset").addEventListener("click", () => {
+  select1.value = "";
+  select2.value = "";
+  updateResult();
+});
+
+loadData();
+</script>
+
+</body>
+</html>
